@@ -9,11 +9,15 @@ A modern notes app built with React and Electron, featuring AI-enabled intellige
 - 🖥️ Cross-platform desktop application
 - ⚡ Real-time suggestions
 
-## Hot keys
+### Hot keys
 
 - `⌘+K` inline chat with AI
 - `⌘+L` convert selected text to LaTeX
 - long-press `TAB` to auto-complete
+
+### Autocomplete
+
+![Autocompletion](https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/autocomplete.gif)
 
 ## Development
 
