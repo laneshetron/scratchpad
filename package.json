@@ -1,0 +1,102 @@
+{
+  "name": "scratchpad",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./build/main/bundle.js",
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "@google/generative-ai": "^0.21.0",
+    "@lexical/link": "^0.25.0",
+    "@lexical/list": "^0.25.0",
+    "@lexical/markdown": "^0.25.0",
+    "@lexical/react": "^0.25.0",
+    "cra-template-typescript": "1.2.0",
+    "dayjs": "^1.11.13",
+    "electron-cli": "^0.2.8",
+    "electron-is-dev": "^3.0.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "katex": "^0.16.19",
+    "lexical": "^0.25.0",
+    "marked": "^15.0.4",
+    "mathjax": "^3.2.2",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.10.8",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "react-spring": "^9.7.5",
+    "react-transition-group": "^4.4.5",
+    "sse.js": "^2.6.0",
+    "ts-loader": "^9.5.1",
+    "update-electron-app": "^3.1.1",
+    "uuid": "^11.1.0",
+    "web-vitals": "^4.2.4"
+  },
+  "scripts": {
+    "start": "npm run electron:dev",
+    "start:prod": "npm run electron:prod",
+    "build": "npx webpack",
+    "clean": "rimraf build dist",
+    "electron:dev": "electron ./build/main/bundle.js",
+    "electron:prod": "ELECTRON_FORCE_IS_PACKAGED=true ELECTRON_IS_DEV=0 NODE_ENV=production electron ./build/main/bundle.js",
+    "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/electron/main.js",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --write 'src/**/*.{ts,tsx,css,json}'"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.6.1",
+    "@electron-forge/maker-deb": "^7.6.1",
+    "@electron-forge/maker-rpm": "^7.6.1",
+    "@electron-forge/maker-squirrel": "^7.6.1",
+    "@electron-forge/maker-zip": "^7.6.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
+    "@electron-forge/plugin-fuses": "^7.6.1",
+    "@electron-forge/publisher-s3": "^7.6.1",
+    "@electron/fuses": "^1.8.0",
+    "@types/katex": "^0.16.7",
+    "@types/marked": "^5.0.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@types/react-transition-group": "^4.4.12",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "^3.5.2",
+    "rimraf": "^5.0.5",
+    "wait-on": "^8.0.1",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "build": {
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  }
+}

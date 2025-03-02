@@ -1,0 +1,93 @@
+.sidebar {
+  height: 100vh; /* Full viewport height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  position: fixed; /* Fix the sidebar position */
+  width: 145px; /* Set a fixed width for the sidebar */
+  background-color: var(--sidebar-bg, #f0f0f0); /* Optional: Add a background color */
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+  z-index: 1;
+}
+
+.recent-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between tabs */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.note-tab {
+  padding: 10px 15px;
+  height: 25px;
+  background-color: var(--note-tab-bg); /* Use variable for background */
+  color: var(--note-tab-text); /* Use variable for text color */
+  border: 1px solid transparent; /* Default border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition:
+    background-color 0.3s,
+    border-color 0.3s; /* Smooth transition */
+}
+
+.note-tab:hover {
+  background-color: var(--note-tab-hover-bg);
+  color: var(--note-tab-hover-text);
+  border-color: var(--note-tab-hover-border);
+}
+
+.note-tab.active {
+  background-color: var(--note-tab-active-bg);
+  color: var(--note-tab-active-text);
+  border-color: var(--note-tab-active-border);
+}
+
+.note-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.note-title {
+  font-size: small;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--note-title-text, #000); /* Use variable for title text color */
+}
+
+.note-title.active {
+  font-weight: 900;
+}
+
+.note-subheader {
+  font-size: smaller;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--note-subheader-text, #666); /* Use variable for subheader text color */
+  margin-top: 2px; /* Space between title and subheader */
+}
+
+.note-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.note-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 300ms,
+    transform 300ms;
+}
+.note-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.note-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 300ms,
+    transform 300ms;
+}

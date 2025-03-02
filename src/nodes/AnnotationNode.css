@@ -1,0 +1,19 @@
+.annotation {
+  padding-top: 10px;
+}
+
+.annotation:before {
+  background-color: var(--llm-output-border);
+}
+
+.annotation::after {
+  content: 'AI Generated';
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background-color: var(--llm-output-border);
+  color: white;
+  padding: 2px 5px;
+  font-size: 0.8em;
+  border-radius: 3px;
+}

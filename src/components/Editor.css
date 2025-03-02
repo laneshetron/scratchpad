@@ -1,0 +1,46 @@
+.editor {
+  flex: 1;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+  outline: none;
+  background-color: var(--editor-bg);
+}
+
+.editor:empty:before {
+  content: attr(data-placeholder);
+  color: var(--editor-placeholder);
+}
+
+.editor-time {
+  color: #999;
+  font-size: small;
+  text-align: center;
+  padding: 10px;
+  background-color: var(--editor-bg);
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  width: calc(100vw - 165px);
+  position: relative;
+}
+
+.placeholder {
+  color: #999;
+  overflow: hidden;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 35px;
+  left: 20px;
+  font-size: 15px;
+  user-select: none;
+  display: inline-block;
+  pointer-events: none;
+}
