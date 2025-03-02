@@ -7,7 +7,8 @@ A modern notes app built with React and Electron, featuring AI-enabled intellige
 ## Features
 
 - 🧠 Intelligent autocompletion
-- ✍️ LaTeX integration
+- ✍️ Seamless WYSIWYG markdown support
+- 🧮 LaTeX integration
 - 🖥️ Cross-platform desktop application
 - ⚡ Real-time suggestions
 
