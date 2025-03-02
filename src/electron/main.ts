@@ -27,12 +27,7 @@ app.on('window-all-closed', () => {
 
 // Initialize directories and files
 async function initializeApp() {
-  updateElectronApp({
-    updateSource: {
-      type: UpdateSourceType.StaticStorage,
-      baseUrl: `https://scratchpad-releases.s3.us-east-1.amazonaws.com/scratchpad/${process.platform}/${process.arch}`,
-    },
-  });
+  updateElectronApp();
 
   NOTES_DIR = path.join(app.getPath('userData'), 'notes');
 

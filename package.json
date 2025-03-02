@@ -1,6 +1,6 @@
 {
   "name": "scratchpad",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "main": "./build/main/bundle.js",
   "dependencies": {
@@ -72,6 +72,7 @@
     "@electron-forge/maker-zip": "^7.6.1",
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
     "@electron-forge/plugin-fuses": "^7.6.1",
+    "@electron-forge/publisher-github": "^7.7.0",
     "@electron-forge/publisher-s3": "^7.6.1",
     "@electron/fuses": "^1.8.0",
     "@types/katex": "^0.16.7",
@@ -98,5 +99,9 @@
     "directories": {
       "buildResources": "assets"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laneshetron/scratchpad.git"
   }
 }

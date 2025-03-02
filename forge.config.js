@@ -57,6 +57,16 @@ module.exports = {
         public: true,
         region: "us-east-1" // Set your desired AWS region here
       }
+    },
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'laneshetron',
+          name: 'scratchpad'
+        },
+        prerelease: false
+      }
     }
   ],
   plugins: [
