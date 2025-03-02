@@ -2,6 +2,8 @@
 
 A modern notes app built with React and Electron, featuring AI-enabled intelligent autocompletion and LaTeX support.
 
+👉 [**Download the latest release**](https://github.com/laneshetron/scratchpad/releases/download/v1.0.0/scratchpad.dmg) 👈
+
 ## Features
 
 - 🧠 Intelligent autocompletion
@@ -18,6 +20,10 @@ A modern notes app built with React and Electron, featuring AI-enabled intellige
 ### Autocomplete
 
 ![Autocompletion](https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/autocomplete.gif)
+
+### Inline Annotations
+
+![Inline Annotations](https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/inline-screenshot.png)
 
 ## Development
 
