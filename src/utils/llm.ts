@@ -44,6 +44,9 @@ export const generateResponseStream = async (
           eventSource.onerror = (error) => {
             console.error('Error:', error);
             eventSource.close();
+            if (error instanceof ProgressEvent && 'status' in error && error.status === 429) {
+              throw new Error('rate_limit');
+            }
             reject(error);
           };
 
@@ -58,6 +61,9 @@ export const generateResponseStream = async (
       }
     } catch (error) {
       console.error('Error in SSE stream:', error);
+      if (error instanceof CustomEvent && 'responseCode' in error && error.responseCode === 429) {
+        throw new Error('rate_limit');
+      }
       yield {
         text: () => '',
         response: () => ({ text: () => '' }),
@@ -85,6 +91,9 @@ export const generateResponse = async (endpoint: string, prompt: string, systemP
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('rate_limit');
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

@@ -19,6 +19,7 @@ import { generateResponseStream } from '../utils/llm';
 import { $createAnnotationNode } from '../nodes/AnnotationNode';
 import { $createSuggestionNode } from '../nodes/SuggestionNode';
 import { recursivelyConvertToLaTeX } from './LaTeXPlugin';
+import { RateLimitDialog } from '../components/RateLimitDialog';
 
 export const OPEN_INLINE_CHAT: LexicalCommand<void> = createCommand();
 
@@ -28,6 +29,7 @@ export const InlineChatPlugin = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [prompt, setPrompt] = useState('');
   const [storedSelection, setStoredSelection] = useState<BaseSelection | null>(null);
+  const [showRateLimit, setShowRateLimit] = useState(false);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -81,27 +83,35 @@ export const InlineChatPlugin = () => {
       }
     });
 
-    const completion = await generateResponseStream('inline', html + '\n\n' + prompt);
-    setVisible(false);
-    setPrompt('');
+    try {
+      const completion = await generateResponseStream('inline', html + '\n\n' + prompt);
+      setVisible(false);
+      setPrompt('');
 
-    let accumulatedText = '';
-    for await (const chunk of completion) {
-      console.log(chunk.text());
-      accumulatedText += chunk.text();
-      editor.update(
-        () => {
-          const paragraph = $getNodeByKey(paragraphKey) as ParagraphNode;
-          const cleanedMatch = accumulatedText
-            .replace(/<suggestion>(.*?)/g, '$1')
-            .replace(/(.*?)<\/suggestion>/g, '$1');
-          paragraph.clear();
-          const node = $createTextNode(cleanedMatch);
-          //paragraph.append(node);
-          recursivelyConvertToLaTeX(paragraph, [node]);
-        },
-        { tag: 'history-merge' }
-      );
+      let accumulatedText = '';
+      for await (const chunk of completion) {
+        console.log(chunk.text());
+        accumulatedText += chunk.text();
+        editor.update(
+          () => {
+            const paragraph = $getNodeByKey(paragraphKey) as ParagraphNode;
+            const cleanedMatch = accumulatedText
+              .replace(/<suggestion>(.*?)/g, '$1')
+              .replace(/(.*?)<\/suggestion>/g, '$1');
+            paragraph.clear();
+            const node = $createTextNode(cleanedMatch);
+            //paragraph.append(node);
+            recursivelyConvertToLaTeX(paragraph, [node]);
+          },
+          { tag: 'history-merge' }
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === 'rate_limit') {
+        setShowRateLimit(true);
+        return;
+      }
+      throw error;
     }
   };
 
@@ -137,6 +147,7 @@ export const InlineChatPlugin = () => {
           </div>
         </div>
       )}
+      <RateLimitDialog open={showRateLimit} onOpenChange={setShowRateLimit} />
     </>
   );
 };

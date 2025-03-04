@@ -26,7 +26,7 @@ import {
   DecoratorNode,
   KEY_TAB_COMMAND,
 } from 'lexical';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { $createAutocompleteNode, AutocompleteNode } from '../nodes/AutocompleteNode';
 import { $createAcceptedNode } from '../nodes/AcceptedNode';
@@ -34,6 +34,7 @@ import { $createSpinnerNode } from '../nodes/SpinnerNode';
 import { $createSuggestionNode } from '../nodes/SuggestionNode';
 import { recursivelyConvertToLaTeX } from './LaTeXPlugin';
 import type { JSX } from 'react';
+import { RateLimitDialog } from '../components/RateLimitDialog';
 
 const SPECULATIVE_AUTOCOMPLETE = false;
 const HISTORY_MERGE = { tag: 'history-merge' };
@@ -80,14 +81,46 @@ function $search(selection: null | BaseSelection): [boolean, string] {
   return [true, word.reverse().join('')];
 }
 
-function useQuery(): (context: string, searchText: string) => SearchPromise {
-  return useCallback((context: string, searchText: string) => {
-    const server = new AutocompleteServer();
-    console.time('query');
-    const response = server.query(context, searchText);
-    console.timeEnd('query');
-    return response;
-  }, []);
+class AutocompleteServer {
+  constructor(private setShowRateLimit: (show: boolean) => void) {}
+
+  query = (context: string, searchText: string): SearchPromise => {
+    let isDismissed = false;
+
+    const dismiss = () => {
+      isDismissed = true;
+    };
+    const promise: Promise<null | string> = (async () => {
+      return new Promise<null | string>(async (resolve, reject) => {
+        try {
+          if (isDismissed) {
+            return reject('Dismissed');
+          }
+          const matchCapitalized = await generateResponse('autocomplete', context);
+
+          const cleanedMatch = matchCapitalized
+            .replace(/<suggestion>(.*?)/g, '$1')
+            .replace(/(.*?)<\/suggestion>/g, '$1');
+
+          if (cleanedMatch === '') {
+            return resolve(null);
+          }
+          return resolve(cleanedMatch);
+        } catch (error) {
+          if (error instanceof Error && error.message === 'rate_limit') {
+            this.setShowRateLimit(true);
+            return reject('Dismissed');
+          }
+          return reject(error);
+        }
+      });
+    })();
+
+    return {
+      dismiss,
+      promise,
+    };
+  };
 }
 
 function formatSuggestionText(suggestion: string): string {
@@ -102,6 +135,7 @@ function formatSuggestionText(suggestion: string): string {
 
 export default function AutocompletePlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
+  const [showRateLimit, setShowRateLimit] = useState(false);
   const query = useQuery();
 
   let tabHoldTimeout: NodeJS.Timeout | null = null;
@@ -338,40 +372,18 @@ export default function AutocompletePlugin(): JSX.Element | null {
       ),
       unmountSuggestion
     );
-  }, [editor, query]);
+  }, [editor]);
 
-  return null;
-}
+  function useQuery(): (context: string, searchText: string) => SearchPromise {
+    return useCallback((context: string, searchText: string) => {
+      const server = new AutocompleteServer(setShowRateLimit);
+      return server.query(context, searchText);
+    }, []);
+  }
 
-class AutocompleteServer {
-  query = (context: string, searchText: string): SearchPromise => {
-    let isDismissed = false;
-
-    const dismiss = () => {
-      isDismissed = true;
-    };
-    const promise: Promise<null | string> = (async () => {
-      return new Promise<null | string>(async (resolve, reject) => {
-        if (isDismissed) {
-          // TODO cache result
-          return reject('Dismissed');
-        }
-        const matchCapitalized = await generateResponse('autocomplete', context);
-
-        const cleanedMatch = matchCapitalized
-          .replace(/<suggestion>(.*?)/g, '$1')
-          .replace(/(.*?)<\/suggestion>/g, '$1');
-
-        if (cleanedMatch === '') {
-          return resolve(null);
-        }
-        return resolve(cleanedMatch);
-      });
-    })();
-
-    return {
-      dismiss,
-      promise,
-    };
-  };
+  return (
+    <>
+      <RateLimitDialog open={showRateLimit} onOpenChange={setShowRateLimit} />
+    </>
+  );
 }

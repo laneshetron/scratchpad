@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   $getSelection,
   $getNodeByKey,
@@ -19,6 +19,7 @@ import {
 import { $generateNodesFromDOM, $generateHtmlFromNodes } from '@lexical/html';
 import { replaceWithLLM } from '../utils/latex';
 import { $createEquationNode } from '../nodes/EquationNode';
+import { RateLimitDialog } from '../components/RateLimitDialog';
 
 export const CONVERT_TO_LATEX: LexicalCommand<void> = createCommand();
 
@@ -54,56 +55,66 @@ export const recursivelyConvertToLaTeX = (root: ElementNode, nodes: LexicalNode[
 
 export function LaTeXPlugin() {
   const [editor] = useLexicalComposerContext();
+  const [showRateLimit, setShowRateLimit] = useState(false);
 
   useEffect(() => {
     const removeLatexListener = editor.registerCommand(
       CONVERT_TO_LATEX,
       () => {
         editor.update(async () => {
-          const selection = $getSelection();
-          if (!selection) return false;
+          try {
+            const selection = $getSelection();
+            if (!selection) return false;
 
-          const nodes = selection.extract();
-          const html = $generateHtmlFromNodes(editor, selection);
+            const nodes = selection.extract();
+            const html = $generateHtmlFromNodes(editor, selection);
 
-          // Remove the selected nodes
-          nodes.forEach((node) => node.remove());
+            // Remove the selected nodes
+            nodes.forEach((node) => node.remove());
 
-          // Convert the text to LaTeX using LLM
-          console.log(html);
-          const completion = await replaceWithLLM(html);
-          let accumulatedText = '';
+            // Convert the text to LaTeX using LLM
+            console.log(html);
+            const completion = await replaceWithLLM(html);
+            let accumulatedText = '';
 
-          let paragraphKey: string;
-          editor.update(
-            () => {
-              const paragraphNode = $createParagraphNode();
-              paragraphKey = paragraphNode.getKey();
-              selection.insertNodes([paragraphNode]);
-            },
-            { tag: 'history-merge' }
-          );
-
-          for await (const chunk of completion) {
-            accumulatedText += chunk.text();
-            console.log(accumulatedText);
-
+            let paragraphKey: string;
             editor.update(
               () => {
-                const paragraphNode = $getNodeByKey(paragraphKey) as ParagraphNode;
-                if (!paragraphNode) return;
-
-                // Clear existing paragraph content
-                paragraphNode.clear();
-
-                const parser = new DOMParser();
-                const dom = parser.parseFromString(accumulatedText, 'text/html');
-                const nodes = $generateNodesFromDOM(editor, dom);
-
-                recursivelyConvertToLaTeX(paragraphNode, nodes);
+                const paragraphNode = $createParagraphNode();
+                paragraphKey = paragraphNode.getKey();
+                selection.insertNodes([paragraphNode]);
               },
               { tag: 'history-merge' }
             );
+
+            for await (const chunk of completion) {
+              accumulatedText += chunk.text();
+              console.log(accumulatedText);
+
+              editor.update(
+                () => {
+                  const paragraphNode = $getNodeByKey(paragraphKey) as ParagraphNode;
+                  if (!paragraphNode) return;
+
+                  // Clear existing paragraph content
+                  paragraphNode.clear();
+
+                  const parser = new DOMParser();
+                  const dom = parser.parseFromString(accumulatedText, 'text/html');
+                  const nodes = $generateNodesFromDOM(editor, dom);
+
+                  recursivelyConvertToLaTeX(paragraphNode, nodes);
+                },
+                { tag: 'history-merge' }
+              );
+            }
+          } catch (error) {
+            console.log('error converting latex:', error);
+            if (error instanceof Error && error.message === 'rate_limit') {
+              setShowRateLimit(true);
+              return;
+            }
+            throw error;
           }
         });
         return true;
@@ -116,5 +127,5 @@ export function LaTeXPlugin() {
     };
   }, [editor]);
 
-  return null;
+  return <RateLimitDialog open={showRateLimit} onOpenChange={setShowRateLimit} />;
 }
