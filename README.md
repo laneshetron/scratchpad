@@ -24,11 +24,7 @@ A modern notes app built with React and Electron, featuring AI-enabled intellige
 
 ### Write beautiful notes
 
-![Write beautiful notes](https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/beautiful.png)
-
-### Inline Annotations
-
-![Inline Annotations](https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/inline-screenshot.png)
+<img src="https://raw.githubusercontent.com/laneshetron/scratchpad/refs/heads/master/beautiful.png" width="500" alt="Write beautiful notes">
 
 ## Development
 
