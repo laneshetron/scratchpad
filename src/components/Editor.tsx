@@ -35,7 +35,18 @@ import { InlineChatPlugin } from '../plugins/InlineChatPlugin';
 import DraggableBlockPlugin from '../plugins/DraggableBlockPlugin';
 import { useState } from 'react';
 
-const placeholder = 'Start a new note...';
+const PlaceholderContent = () => (
+  <div className="placeholder">
+    Start a new note...
+    <br />
+    <br />
+    <ul>
+      <li>⌘+K inline chat with AI</li>
+      <li>⌘+L convert selected text to LaTeX</li>
+      <li>long-press TAB to auto-complete</li>
+    </ul>
+  </div>
+);
 
 export const Editor: React.FC<EditorProps> = () => {
   const { currentFile, saveNote } = useFiles();
@@ -116,9 +127,9 @@ export const Editor: React.FC<EditorProps> = () => {
           contentEditable={
             <div className="ref-container" ref={onRef}>
               <ContentEditable
-                aria-placeholder={placeholder}
+                aria-placeholder={PlaceholderContent.toString()}
                 className="editor"
-                placeholder={<div className="placeholder">{placeholder}</div>}
+                placeholder={<PlaceholderContent />}
               />
             </div>
           }
