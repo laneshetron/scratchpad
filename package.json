@@ -1,6 +1,6 @@
 {
   "name": "scratchpad",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "main": "./build/main/bundle.js",
   "dependencies": {
@@ -42,6 +42,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
+    "publish:intel": "electron-forge publish --arch x64",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --write 'src/**/*.{ts,tsx,css,json}'"
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.6.1",
     "@electron-forge/maker-deb": "^7.6.1",
+    "@electron-forge/maker-dmg": "^7.7.0",
     "@electron-forge/maker-rpm": "^7.6.1",
     "@electron-forge/maker-squirrel": "^7.6.1",
     "@electron-forge/maker-zip": "^7.6.1",
