@@ -32,15 +32,24 @@ import { SuggestionNode } from '../nodes/SuggestionNode';
 import { EditorState } from 'lexical';
 import { useFiles } from '../contexts/FileContext';
 import { InlineChatPlugin } from '../plugins/InlineChatPlugin';
+import DraggableBlockPlugin from '../plugins/DraggableBlockPlugin';
+import { useState } from 'react';
 
 const placeholder = 'Start a new note...';
 
 export const Editor: React.FC<EditorProps> = () => {
   const { currentFile, saveNote } = useFiles();
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
   // send editor state to FileContext
   const onEditorChange = (editorState: EditorState) => {
     saveNote(JSON.stringify(editorState), currentFile.name, currentFile.filePath);
+  };
+
+  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
+    if (_floatingAnchorElem !== null) {
+      setFloatingAnchorElem(_floatingAnchorElem);
+    }
   };
 
   const editorConfig = {
@@ -105,17 +114,20 @@ export const Editor: React.FC<EditorProps> = () => {
         </div>
         <RichTextPlugin
           contentEditable={
-            <ContentEditable
-              aria-placeholder={placeholder}
-              className="editor"
-              placeholder={<div className="placeholder">{placeholder}</div>}
-            />
+            <div className="ref-container" ref={onRef}>
+              <ContentEditable
+                aria-placeholder={placeholder}
+                className="editor"
+                placeholder={<div className="placeholder">{placeholder}</div>}
+              />
+            </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
         <OnChangePlugin ignoreSelectionChange={true} onChange={onEditorChange} />
         <HistoryPlugin />
         <AutocompletePlugin />
+        <DraggableBlockPlugin anchorElem={floatingAnchorElem || undefined} />
         <LaTeXPlugin />
         <EquationsPlugin />
         <InlineChatPlugin />

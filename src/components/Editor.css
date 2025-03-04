@@ -1,6 +1,11 @@
+.ref-container {
+  flex: 1;
+  background-color: var(--editor-bg);
+}
+
 .editor {
   flex: 1;
-  padding-left: 20px;
+  padding-left: 25px;
   padding-right: 20px;
   padding-bottom: 20px;
   font-size: 14px;
